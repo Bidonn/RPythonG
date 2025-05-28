@@ -2,26 +2,27 @@ import pygame
 import random
 import time
 import settings as s
-from theGame.settings import HEIGHT
+from settings import HEIGHT
 
 pygame.font.init()
 
 WIN = pygame.display.set_mode((s.WIDTH, s.HEIGHT))
 
-BG = pygame.transform.scale(pygame.image.load('imgs/testBG.jpg'), (s.WIDTH, s.HEIGHT))
+BG = pygame.transform.scale(pygame.image.load('imgs/village-bg.png'), (s.WIDTH, s.HEIGHT))
+HERO_IMG = pygame.transform.scale(pygame.image.load('imgs/hero.jpg'), (s.WIDTH/20, s.HEIGHT/10))
 
-pygame.display.set_caption('Learnign experience')
+pygame.display.set_caption('village killer')
 
 
 FONT = pygame.font.SysFont('comicsans', 30)
 
 def draw(hero, elapsed_time):
     WIN.blit(BG, (0, 0))
-    time_text = FONT.render(f"Time: {round(elapsed_time)}s", True, "white")
+    time_text = FONT.render(f"Time: {round(elapsed_time)}s", True, "black")
 
     WIN.blit(time_text, (10,10))
 
-    pygame.draw.rect(WIN, "blue", hero)
+    WIN.blit(HERO_IMG, hero)
 
     pygame.display.update()
 
