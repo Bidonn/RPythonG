@@ -9,31 +9,32 @@ pygame.font.init()
 WIN = pygame.display.set_mode((s.WIDTH, s.HEIGHT))
 
 hero = Warrior("Imie gracza")
-hero = Wizzard("Imie gracza")
 
-BG = pygame.transform.scale(pygame.image.load('imgs/village-bg.png'), (s.WIDTH, s.HEIGHT))
+BG = pygame.transform.scale(pygame.image.load('imgs/tlo2.png'), (2000, 800))
 HERO_IMG = pygame.transform.scale(pygame.image.load(hero.image), (60, 120))
 
 pygame.display.set_caption('village killer')
 
 
 FONT = pygame.font.SysFont('comicsans', 30)
+s.Scroll = 0
+player = pygame.Rect(hero.X, hero.Y, 60, 120)
 
-def draw(hero, elapsed_time):
-    WIN.blit(BG, (0, 0))
+def draw(hero, elapsed_time, scroll):
+    WIN.blit(BG, (-scroll, 0))  # przesunięcie tła
+
     time_text = FONT.render(f"Time: {round(elapsed_time)}s", True, "black")
+    WIN.blit(time_text, (10, 10))
 
-    WIN.blit(time_text, (10,10))
-
-    WIN.blit(HERO_IMG, hero)
+    WIN.blit(HERO_IMG, player)
 
     pygame.display.update()
 
 
 def clamp_player_position(player):
     # Ograniczenie w pionie: max y to połowa wysokości okna, min y to dół okna minus wysokość postaci
-    if player.y < s.HEIGHT / 2:
-        player.y = s.HEIGHT / 2
+    if player.y < s.HEIGHT - 550:
+        player.y = s.HEIGHT - 550
     if player.y > s.HEIGHT - player.height:
         player.y = s.HEIGHT - player.height
 
@@ -45,12 +46,13 @@ def clamp_player_position(player):
 
 
 def main():
+
     run = True
     clock = pygame.time.Clock()
     start_time = time.time()
     elapsed_time = 0
 
-    player = pygame.Rect(hero.X, hero.Y, 60, 120)
+
 
 
     while run:
@@ -66,19 +68,42 @@ def main():
 
 
         keys = pygame.key.get_pressed()
+        # LEWO
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            player.x -= hero.ms
+            if player.x > s.WIDTH // 2 or s.Scroll <= 0:  # ZMIANA – tylko jeśli nie można scrollować
+                player.x -= hero.ms
+                if player.x < 0:  # NOWE – ograniczenie lewej krawędzi
+                    player.x = 0
+            else:
+                s.Scroll -= hero.ms  # NOWE – przesuwanie świata
+                if s.Scroll < 0:  # NOWE – ograniczenie lewej granicy świata
+                    s.Scroll = 0
+
+        # PRAWO
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            player.x += hero.ms
+            if player.x < s.WIDTH // 2 or s.Scroll >= BG.get_width() - s.WIDTH:  # ZMIANA
+                player.x += hero.ms
+                if player.x > s.WIDTH - player.width:  # NOWE – ograniczenie prawej krawędzi ekranu
+                    player.x = s.WIDTH - player.width
+            else:
+                s.Scroll += hero.ms  # NOWE – przesuwanie świata
+                max_scroll = BG.get_width() - s.WIDTH  # NOWE – maksymalne przesunięcie
+                if s.Scroll > max_scroll:  # NOWE – ograniczenie końca świata
+                    scroll_offset = max_scroll
+
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             player.y -= hero.ms
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             player.y += hero.ms
 
+        clamp_player_position(player)
+
+        draw(player, elapsed_time, s.Scroll)
+
 
         clamp_player_position(player)  # <- tutaj ograniczamy ruch gracza
 
-        draw(player, elapsed_time)
+        draw(player, elapsed_time, s.Scroll)
 
     pygame.quit()
 

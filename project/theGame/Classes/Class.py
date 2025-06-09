@@ -11,7 +11,7 @@ class Class(ABC):
         self.hp = hp
         self.ms = ms
         self.image = image
-        self.X = s.WIDTH/2
+        self.X = 20
         self.Y = s.HEIGHT/2
 
     @abstractmethod
@@ -33,7 +33,7 @@ class Class(ABC):
 class Warrior(Class):
 
     def __init__(self, player: str):
-        super().__init__("Warrior", player, 100, 3, "imgs/warrior.png")
+        super().__init__("Warrior", player, 100, 10, "imgs/warrior.png")
         print("Created Warrior")
 
     def spell1(self):
