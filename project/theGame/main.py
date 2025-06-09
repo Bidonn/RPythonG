@@ -3,12 +3,20 @@ import random
 import time
 import settings as s
 from project.theGame.Classes.Class import Class, Warrior, Wizzard
+from project.theGame.Classes.Enemy import Enemy
 
-pygame.font.init()
+
 
 WIN = pygame.display.set_mode((s.WIDTH, s.HEIGHT))
 
 hero = Warrior("Imie gracza")
+
+
+
+enemy = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/hero.jpg'), (60,120)), s.Scroll)
+enemy2 = Enemy("ziutek 2", s.WIDTH, s.HEIGHT - s.HEIGHT/2, pygame.transform.scale(pygame.image.load('imgs/hero.jpg'), (60,120)), s.Scroll)
+
+enemies = [enemy, enemy2]
 
 BG = pygame.transform.scale(pygame.image.load('imgs/tlo2.png'), (2000, 800))
 HERO_IMG = pygame.transform.scale(pygame.image.load(hero.image), (60, 120))
@@ -16,17 +24,19 @@ HERO_IMG = pygame.transform.scale(pygame.image.load(hero.image), (60, 120))
 pygame.display.set_caption('village killer')
 
 
-FONT = pygame.font.SysFont('comicsans', 30)
 s.Scroll = 0
 player = pygame.Rect(hero.X, hero.Y, 60, 120)
 
 def draw(hero, elapsed_time, scroll):
     WIN.blit(BG, (-scroll, 0))  # przesunięcie tła
 
-    time_text = FONT.render(f"Time: {round(elapsed_time)}s", True, "black")
+    time_text = s.FONT.render(f"Time: {round(elapsed_time)}s", True, "black")
     WIN.blit(time_text, (10, 10))
 
     WIN.blit(HERO_IMG, player)
+
+    for enemy in enemies:
+        enemy.draw(WIN)
 
     pygame.display.update()
 
@@ -96,13 +106,12 @@ def main():
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             player.y += hero.ms
 
-        clamp_player_position(player)
 
-        draw(player, elapsed_time, s.Scroll)
-
+        for enemy in enemies:
+            enemy.move(player, s.Scroll)
+            clamp_player_position(enemy)
 
         clamp_player_position(player)  # <- tutaj ograniczamy ruch gracza
-
         draw(player, elapsed_time, s.Scroll)
 
     pygame.quit()
