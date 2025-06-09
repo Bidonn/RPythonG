@@ -5,6 +5,7 @@ import time
 import settings as s
 from project.theGame.Classes.Class import Warrior, Wizzard
 from project.theGame.Classes.Enemy import Enemy
+from project.theGame.Classes.Button import Button
 
 pygame.init()
 
@@ -15,18 +16,20 @@ pygame.display.set_caption('village killer')
 hero = Warrior("Imie gracza")
 
 # Wczytanie grafik
-
+MENU_BG = pygame.transform.scale(pygame.image.load('imgs/village-bg.png'), (1000, 800))
+TITLE_LOGO = pygame.transform.scale(pygame.image.load('imgs/titlelogo.png'), (500, 500))
 BG = pygame.transform.scale(pygame.image.load('imgs/tlo2.png'), (2000, 800))
 HERO_IMG = pygame.transform.scale(pygame.image.load(hero.image), (60, 120))
 
 # Przeciwnicy
-enemy = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/hero.jpg'), (60,120)), s.Scroll)
-enemy2 = Enemy("ziutek 2", s.WIDTH, s.HEIGHT - s.HEIGHT/2, pygame.transform.scale(pygame.image.load('imgs/hero.jpg'), (60,120)), s.Scroll)
+enemy = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll)
+enemy2 = Enemy("ziutek 2", s.WIDTH, s.HEIGHT - s.HEIGHT/2, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll)
 enemies = [enemy, enemy2]
 
 # Scroll i gracz
 s.Scroll = 0
 player = pygame.Rect(hero.X, hero.Y, 60, 120)
+
 
 
 def draw(hero, elapsed_time, scroll):
@@ -59,11 +62,33 @@ def clamp_player_position(player):
 
 
 def main():
-    run = True
+    start_button = Button(s.WIDTH // 2 - 100, s.HEIGHT // 3 * 2, 200, 50, "Start Game", (255,255,255), (50,255,50))
+
+    run = False
+    menu = True
     clock = pygame.time.Clock()
-    start_time = time.time()
     elapsed_time = 0
 
+    while menu:
+        clock.tick(60)
+        WIN.blit(MENU_BG,(0,0))
+        start_button.draw(WIN)
+        WIN.blit(TITLE_LOGO,(s.WIDTH//2 - TITLE_LOGO.get_width()/2,s.HEIGHT//3 - TITLE_LOGO.get_height()/2))
+
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False
+
+            if start_button.handle_event(event):
+                menu = False
+                run = True
+
+        pygame.display.update()
+
+
+    start_time = time.time()
     while run:
         clock.tick(60)
         elapsed_time = time.time() - start_time
@@ -112,8 +137,7 @@ def main():
             player.y += hero.ms
 
         for enemy in enemies:
-            enemy.move(player, s.Scroll)
-            clamp_player_position(enemy)
+            enemy.move(player,enemies, s.Scroll)
 
         clamp_player_position(player)
         draw(hero, elapsed_time, s.Scroll)

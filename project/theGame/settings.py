@@ -6,3 +6,4 @@ WIDTH = 1000
 HEIGHT = 800
 Scroll = 0
 FONT = pygame.font.SysFont('comicsans', 30)
+TITLE_FONT = pygame.font.SysFont('comicsans', 64)
