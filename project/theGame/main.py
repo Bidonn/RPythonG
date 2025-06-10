@@ -5,6 +5,7 @@ import time
 import settings as s
 from project.theGame.Classes.Enemy import Enemy
 import project.theGame.Classes.UI as UI
+from project.theGame.database import initialize_db
 
 pygame.init()
 
@@ -50,24 +51,34 @@ def clamp_player_position(player):
 
 
 def main():
-
+    initialize_db()
 
     clock = pygame.time.Clock()
     elapsed_time = 0
-    while True:
-        clock.tick(60)
-        if UI.ui_menu(WIN):
-            break
-        pygame.display.update()
 
-    hero = UI.ui_character_select(WIN)
-    if hero is None:  # Jeśli użytkownik zamknął okno
+    menu_choice = UI.ui_menu(WIN)
+
+    if menu_choice == "new_game":
+        # Nowa gra - wybór postaci
+        hero = UI.ui_character_select(WIN)
+        if hero is None:  # Jeśli użytkownik zamknął okno
+            return
+    elif menu_choice == "load_game":
+        # Ładowanie gry
+        hero = UI.ui_load_game(WIN)
+        if hero is None:  # Jeśli użytkownik anulował lub zamknął okno
+            return
+    elif menu_choice == "quit":
         return
+
+
 
     s.Scroll = 0
     player = pygame.Rect(hero.X, hero.Y, 60, 120)
 
     start_time = time.time()
+    pause_time = 0
+
     while True:
         clock.tick(60)
         elapsed_time = time.time() - start_time
@@ -81,7 +92,22 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 hero.start_attack(pygame.mouse.get_pos(), player)
 
+            if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_p):
+                pause_start = time.time()
 
+                # Narysuj aktualny stan gry przed pauzą
+                draw(hero, elapsed_time, s.Scroll, player)
+
+                # Wywołaj menu pauzy
+                pause_choice = UI.ui_pause_menu(WIN, hero, elapsed_time)
+
+                pause_end = time.time()
+                pause_time += pause_end - pause_start
+
+                if pause_choice == "exit":
+                    return "menu"
+                elif pause_choice == "resume":
+                    continue  # Kontynuuj grę
 
         keys = pygame.key.get_pressed()
 

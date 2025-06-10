@@ -5,8 +5,8 @@ import pygame
 
 
 class Class(ABC):
-    def __init__(self, name: str, player: str, hp: int, ms: int, image: str):
-        self.level = 1
+    def __init__(self, name: str, player: str, hp: int, ms: int, image: str, level, score):
+        self.level = level
         self.player = player
         self.name = name
         self.hp = hp
@@ -14,9 +14,8 @@ class Class(ABC):
         self.image = pygame.transform.scale(pygame.image.load(image), (60, 120))
         self.X = 20
         self.Y = s.HEIGHT / 2
-        self.score = 0
+        self.score = score
 
-        # Miecz – domyślne wartości
 
 
     @abstractmethod
@@ -55,7 +54,7 @@ class Class(ABC):
 
 class Warrior(Class):
     sword_timelimit = 1.5
-    def __init__(self, player: str):
+    def __init__(self, player: str, level, score):
         self.sword_angle = 0
         self.sword_img = pygame.transform.scale(pygame.image.load("imgs/sword.png"), (100, 33))
         self.sword_active = False
@@ -63,7 +62,7 @@ class Warrior(Class):
         self.sword_base_angle = 0  # Kąt bazowy (do kursora)
         self.sword_attack_duration = 0.25  # sekundy
         self.sword_pos = (0, 0)
-        super().__init__("Warrior", player, 100, 10, "imgs/warrior.png")
+        super().__init__("Warrior", player, 100, 10, "imgs/warrior.png", level, score)
         print("Created Warrior")
 
     def spell1(self):
@@ -149,8 +148,8 @@ class Warrior(Class):
 
 
 class Wizzard(Class):
-    def __init__(self, player: str):
-        super().__init__("Wizzard", player, 50, 4, "imgs/wizzard.png")
+    def __init__(self, player: str, level, score):
+        super().__init__("Wizzard", player, 50, 4, "imgs/wizzard.png", level, score)
         print("Created Wizzard")
 
     def spell1(self):
