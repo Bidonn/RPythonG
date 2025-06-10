@@ -48,7 +48,7 @@ class Class(ABC):
         pass
 
     @abstractmethod
-    def check_attack(self, enemy, gametime):
+    def check_attack(self, enemy, gametime): # pls zaimplementuj w wizardzie
         pass
 
 
