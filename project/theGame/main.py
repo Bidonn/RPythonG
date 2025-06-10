@@ -23,7 +23,7 @@ enemies = [enemy, enemy2]
 def draw(hero, elapsed_time, scroll, player):
     WIN.blit(BG, (-scroll, 0))
 
-    time_text = s.FONT.render(f"Time: {round(elapsed_time)}s", True, "black")
+    time_text = s.FONT.render(f"Time: {round(elapsed_time)}s   Score: {hero.score}", True, "black")
     WIN.blit(time_text, (10, 10))
 
     WIN.blit(hero.image, player)
@@ -76,8 +76,7 @@ def main():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
-                break
+                return
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 hero.start_attack(pygame.mouse.get_pos(), player)

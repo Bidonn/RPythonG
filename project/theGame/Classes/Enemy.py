@@ -45,6 +45,7 @@ class Enemy:
 
         self.health -= hero.level * 10
         if self.health < 0:
+            hero.score += self.max_health * hero.level
             return False
         else:
             return True
