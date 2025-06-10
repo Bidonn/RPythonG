@@ -47,6 +47,10 @@ class Class(ABC):
     def draw_attack(self, surface):
         pass
 
+    @abstractmethod
+    def check_attack(self, enemy, gametime):
+        pass
+
 
 class Warrior(Class):
     sword_timelimit = 1.5
@@ -116,6 +120,31 @@ class Warrior(Class):
         rotated_sword = pygame.transform.rotate(self.sword_img, self.sword_angle)
         rect = rotated_sword.get_rect(center=self.sword_pos)
         surface.blit(rotated_sword, rect.topleft)
+
+    def check_attack(self, enemy, gametime): # true jesli enemis zyje false jesli wlasnie umarl od ataku
+        if not self.sword_active:  # jeśli miecz nie jest aktywny, nie sprawdzamy ataku
+            return True
+
+            # Obliczamy środek miecza na podstawie sword_pos
+        sword_center_x = self.sword_pos[0]
+        sword_center_y = self.sword_pos[1]
+
+        # Obliczamy środek przeciwnika
+        enemy_center_x = enemy.x + enemy.width / 2
+        enemy_center_y = enemy.y + enemy.height / 2
+
+        # Obliczamy odległość między mieczem a przeciwnikiem używając wzoru na odległość między punktami
+        distance = math.sqrt(
+            (sword_center_x - enemy_center_x) ** 2 +
+            (sword_center_y - enemy_center_y) ** 2
+        )
+
+        # Jeśli przeciwnik jest w zasięgu 50 pikseli od miecza
+        if distance <= 50:
+            # Wywołujemy metodę take_damage na przeciwniku
+            return enemy.take_damage(self, gametime)
+
+        return True
 
 
 class Wizzard(Class):

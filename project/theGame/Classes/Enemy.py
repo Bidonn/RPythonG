@@ -8,8 +8,9 @@ from typing import List
 
 class Enemy:
     FONT = pygame.font.SysFont('comicsans', 30)
-    def __init__(self, name: str, x ,y, image: pygame.Surface, scroll):
-        self.health = 100
+    def __init__(self, name: str, x ,y, image: pygame.Surface, scroll, max_health):
+        self.health = max_health
+        self.max_health = max_health
         self.x = x
         self.y = y
         self.name = name
@@ -34,6 +35,20 @@ class Enemy:
         # Aktualizujemy rect
         self.rect.x = self.x
         self.rect.y = self.y
+
+
+    def take_damage(self, hero, gametime): # true jesli enemis zyje false jesli wlasnie umarl od ataku
+        if self.dmg_cd > gametime:
+            return True
+        else:
+            self.dmg_cd = gametime + 0.5
+
+        self.health -= hero.level * 10
+        if self.health < 0:
+            return False
+        else:
+            return True
+
 
     def move(self, player, enemies: List[Enemy], scroll):
         if scroll != self.last_scroll: # zeby sie kleil do tla
@@ -81,8 +96,12 @@ class Enemy:
         self.clamp_position() # clamp i aktualizacja recta
 
 
-    def draw(self, WIN: pygame.display):
+    def draw(self, WIN: pygame.display, gametime):
         WIN.blit(self.image, (self.x, self.y))
+        color = (255,0,0)
+        if self.dmg_cd > gametime:
+            color = (50,50,50)
+        pygame.draw.rect(WIN, color, (self.x - 10, self.y - 20, max(80 * (self.health/self.max_health), 5),15))
         if s.DEBUG:
             debug_text = s.FONT.render(f"{int(self.x)}, {int(self.y)}", True, "black")
             WIN.blit(debug_text, (self.x, self.y -60))

@@ -3,9 +3,7 @@ import pygame
 import random
 import time
 import settings as s
-from project.theGame.Classes.Class import Warrior, Wizzard
 from project.theGame.Classes.Enemy import Enemy
-from project.theGame.Classes.Button import Button
 import project.theGame.Classes.UI as UI
 
 pygame.init()
@@ -17,13 +15,9 @@ pygame.display.set_caption('village killer')
 BG = pygame.transform.scale(pygame.image.load('imgs/tlo2.png'), (2000, 800))
 
 # Przeciwnicy
-enemy = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll)
-enemy2 = Enemy("ziutek 2", s.WIDTH, s.HEIGHT - s.HEIGHT/2, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll)
+enemy = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
+enemy2 = Enemy("ziutek 2", s.WIDTH, s.HEIGHT - s.HEIGHT/2, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
 enemies = [enemy, enemy2]
-
-# Scroll i gracz
-
-
 
 
 def draw(hero, elapsed_time, scroll, player):
@@ -35,7 +29,7 @@ def draw(hero, elapsed_time, scroll, player):
     WIN.blit(hero.image, player)
 
     for enemy in enemies:
-        enemy.draw(WIN)
+        enemy.draw(WIN, elapsed_time)
 
     hero.draw_attack(WIN)
 
@@ -123,6 +117,9 @@ def main():
 
         for enemy in enemies:
             enemy.move(player,enemies, s.Scroll)
+            if not hero.check_attack(enemy, elapsed_time):
+                enemies.remove(enemy)
+                continue
 
         clamp_player_position(player)
         draw(hero, elapsed_time, s.Scroll, player)
