@@ -18,6 +18,7 @@ class Class(ABC):
 
 
 
+
     @abstractmethod
     def spell1(self):
         pass
@@ -60,7 +61,7 @@ class Warrior(Class):
         self.sword_active = False
         self.sword_timer = 0
         self.sword_base_angle = 0  # Kąt bazowy (do kursora)
-        self.sword_attack_duration = 0.25  # sekundy
+        self.sword_attack_duration = 0.3  # sekundy
         self.sword_pos = (0, 0)
         super().__init__("Warrior", player, 100, 10, "imgs/warrior.png", level, score)
         print("Created Warrior")
@@ -140,7 +141,7 @@ class Warrior(Class):
         )
 
         # Jeśli przeciwnik jest w zasięgu 50 pikseli od miecza
-        if distance <= 50:
+        if distance <= 80:
             # Wywołujemy metodę take_damage na przeciwniku
             return enemy.take_damage(self, gametime)
 
@@ -149,6 +150,19 @@ class Warrior(Class):
 
 class Wizzard(Class):
     def __init__(self, player: str, level, score):
+        self.magic_cd = 1
+        self.magic_timer = 0
+        self.magic_missiles = []
+        self.magic_cd = 5  # cooldown w milisekundach
+        self.magic_timer = 0
+        self.magic_damage = 20
+        self.missile_speed = 5
+        self.missile_radius = 5  # promień kółka pocisku
+        self.missile_color = (0, 0, 255)  # niebieski kolor
+
+        # Obrazek pocisku
+        self.missile_img = pygame.Surface((40, 16), pygame.SRCALPHA)
+        pygame.draw.ellipse(self.missile_img, (0, 150, 255), (0, 0, 40, 16))
         super().__init__("Wizzard", player, 50, 4, "imgs/wizzard.png", level, score)
         print("Created Wizzard")
 
@@ -163,3 +177,140 @@ class Wizzard(Class):
 
     def attack(self):
         pass
+
+    def start_attack(self, mouse_pos, player_rect):
+        # Sprawdzenie cooldownu
+        current_time = pygame.time.get_ticks()
+        if current_time - self.magic_timer < self.magic_cd:
+            return False
+
+        # Resetowanie timera
+        self.magic_timer = current_time
+
+        # Obliczenie kierunku pocisku (np. w stronę kursora myszy)
+        dx = mouse_pos[0] - player_rect.centerx
+        dy = mouse_pos[1] - player_rect.centery
+        direction = math.atan2(dy, dx)
+
+        # Tworzenie nowego pocisku
+        new_missile = Missile(
+            x=player_rect.centerx,
+            y=player_rect.centery,
+            direction=direction,
+            speed=self.missile_speed,
+            damage=self.magic_damage,
+            owner=self,
+            radius=self.missile_radius,
+            color=self.missile_color
+
+        )
+
+        # Dodanie pocisku do tablicy
+        self.magic_missiles.append(new_missile)
+        return True
+
+    def update_attack(self, player_rect):
+        # Aktualizacja wszystkich aktywnych pocisków
+        for missile in self.magic_missiles[:]:  # Kopia listy, żeby bezpiecznie usuwać elementy
+            missile.update()
+
+            # Usuwanie nieaktywnych pocisków z listy
+            if not missile.active:
+                self.magic_missiles.remove(missile)
+
+    def draw_attack(self, surface):
+        # Rysowanie wszystkich aktywnych pocisków
+        for missile in self.magic_missiles:
+            missile.draw(surface)
+        print(f"Liczba pocisków: {len(self.magic_missiles)}")
+
+    def check_attack(self, enemy, gametime):
+        """
+        Sprawdza kolizję wszystkich pocisków z danym przeciwnikiem.
+        Zwraca True jeśli przeciwnik żyje, False jeśli został pokonany.
+        """
+        enemy_alive = True
+
+        # Sprawdzanie kolizji dla wszystkich pocisków
+        for missile in self.magic_missiles[:]:  # Kopia listy
+            # Sprawdź kolizję z przeciwnikiem
+            if not missile.check_collision(enemy, gametime):
+                enemy_alive = False
+                # Wróć wcześniej, ponieważ przeciwnik już został pokonany
+                break
+
+        # Usuń nieaktywne pociski
+        self.magic_missiles = [m for m in self.magic_missiles if m.active]
+
+        return enemy_alive  # True jeśli przeciwnik żyje, False jeśli został pokonany
+
+
+class Missile:
+    def __init__(self, x, y, direction, speed, damage, owner, radius=5, color=(0, 0, 255)):
+        self.x = x
+        self.y = y
+        self.direction = direction  # kąt w radianach
+        self.speed = speed
+        self.damage = damage
+        self.owner = owner  # odniesienie do postaci, która wystrzeliła pocisk
+        self.radius = radius  # promień kółka
+        self.color = color  # kolor RGB (0,0,255) to niebieski
+        self.active = True
+        self.start_time = pygame.time.get_ticks()
+        self.lifetime = 5000  # czas życia pocisku w milisekundach (3 sekundy)
+
+        # Obliczenie wektora kierunku na podstawie kąta
+        self.dx = math.cos(self.direction) * self.speed
+        self.dy = math.sin(self.direction) * self.speed
+
+        # Tworzymy prostokąt do kolizji
+        self.rect = pygame.Rect(self.x - self.radius, self.y - self.radius,
+                                self.radius * 2, self.radius * 2)
+
+    def update(self):
+        # Sprawdzenie czy pocisk nie przekroczył czasu życia
+        current_time = pygame.time.get_ticks()
+        if current_time - self.start_time > self.lifetime:
+            self.active = False
+            return
+
+        # Aktualizacja pozycji
+        self.x += self.dx
+        self.y += self.dy
+
+        # Aktualizacja prostokąta
+        self.rect.center = (self.x, self.y)
+
+        # Sprawdzenie czy pocisk nie wyleciał poza ekran
+        if (self.x < 0 or self.x > s.WIDTH or
+                self.y < 0 or self.y > s.HEIGHT):
+            self.active = False
+
+    def draw(self, screen):
+
+        if self.active:
+            # Rysowanie kółka zamiast obrazka
+            pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius)
+
+            # Opcjonalnie: dodaj efekt blasku (większe, półprzezroczyste kółko)
+            # Aby to zrobić, potrzebujesz powierzchni z przezroczystością
+            glow_surface = pygame.Surface((self.radius * 4, self.radius * 4), pygame.SRCALPHA)
+            pygame.draw.circle(glow_surface, (*self.color, 100), (self.radius * 2, self.radius * 2), self.radius * 2)
+            screen.blit(glow_surface, (int(self.x) - self.radius * 2, int(self.y) - self.radius * 2))
+
+    def check_collision(self, enemy, gametime):
+        """Sprawdza kolizję z przeciwnikiem i wywołuje jego metodę take_damage"""
+        if not self.active:
+            return True  # pocisk nieaktywny, przeciwnik żyje
+
+        # Prostokąt dla pocisku
+        missile_rect = pygame.Rect(self.x - self.radius, self.y - self.radius,
+                                   self.radius * 2, self.radius * 2)
+        enemy_rect = pygame.Rect(enemy.x, enemy.y, enemy.width, enemy.height)
+
+        if missile_rect.colliderect(enemy_rect):
+            self.active = False  # pocisk znika po trafieniu
+            return enemy.take_damage(self.owner, gametime)
+
+        return True  # przeciwnik żyje, nie został trafiony
+
