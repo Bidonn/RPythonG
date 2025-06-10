@@ -16,11 +16,17 @@ pygame.display.set_caption('village killer')
 BG = pygame.transform.scale(pygame.image.load('imgs/tlo2.png'), (2000, 800))
 
 # Przeciwnicy
-enemy = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
+"""enemy = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
 enemy2 = Enemy("ziutek 2", s.WIDTH, s.HEIGHT - s.HEIGHT/2, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
-enemies = [enemy, enemy2]
-
-
+enemies = [enemy, enemy2]"""
+"""
+TESTOWO
+"""
+enemy1 = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
+enemies = [enemy1]
+"""
+TESTOWO
+"""
 def draw(hero, elapsed_time, scroll, player):
     WIN.blit(BG, (-scroll, 0))
 
@@ -33,6 +39,13 @@ def draw(hero, elapsed_time, scroll, player):
         enemy.draw(WIN, elapsed_time)
 
     hero.draw_attack(WIN)
+
+
+    if hero.level == 3:
+        # Tworzenie niebieskiego kwadratu o wymiarach 50x50 pikseli
+        blue_square = pygame.Rect(s.WIDTH // 2 - 25, s.HEIGHT // 2 - 25, 50, 50)
+        pygame.draw.rect(WIN, (0, 0, 255), blue_square)  # Kolor (0, 0, 255) to niebieski w RGB
+
 
     pygame.display.update()
 
@@ -52,7 +65,6 @@ def clamp_player_position(player):
 
 def main():
     initialize_db()
-
     clock = pygame.time.Clock()
     elapsed_time = 0
 
@@ -84,6 +96,14 @@ def main():
         elapsed_time = time.time() - start_time
 
         hero.update_attack(player)
+
+        #Testowałem respienie się wrogów, można by na przykład tutaj wstawić coś no nie?
+        if(hero.level != 3):
+            if len(enemies) == 0:
+                hero.level += 1
+                for i in range(hero.level):
+                    tmp = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
+                    enemies.append(tmp)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

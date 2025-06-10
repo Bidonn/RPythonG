@@ -5,7 +5,7 @@ import pygame
 
 
 class Class(ABC):
-    def __init__(self, name: str, player: str, hp: int, ms: int, image: str, level, score):
+    def __init__(self, name: str, player: str, hp: int, ms: int, image: str, score,level=1):
         self.level = level
         self.player = player
         self.name = name
@@ -55,7 +55,7 @@ class Class(ABC):
 
 class Warrior(Class):
     sword_timelimit = 1.5
-    def __init__(self, player: str, level, score):
+    def __init__(self, player: str,score,level=1):
         self.sword_angle = 0
         self.sword_img = pygame.transform.scale(pygame.image.load("imgs/sword.png"), (100, 33))
         self.sword_active = False
@@ -149,7 +149,7 @@ class Warrior(Class):
 
 
 class Wizzard(Class):
-    def __init__(self, player: str, level, score):
+    def __init__(self, player: str, score,level=1):
         self.magic_cd = 1
         self.magic_timer = 0
         self.magic_missiles = []
