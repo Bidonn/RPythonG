@@ -11,7 +11,7 @@ class Class(ABC):
         self.name = name
         self.hp = hp
         self.ms = ms
-        self.image = image
+        self.image = pygame.transform.scale(pygame.image.load(image), (60, 120))
         self.X = 20
         self.Y = s.HEIGHT / 2
 
