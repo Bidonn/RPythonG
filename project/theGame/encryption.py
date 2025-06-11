@@ -8,8 +8,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 class SimpleEncryption:
     def __init__(self, password: str = "default_game_password"):
         """
-        Inicjalizuje szyfrowanie z hasłem.
-        W prawdziwej aplikacji hasło powinno być bezpiecznie przechowywane.
+        Inicjalizuje szyfrowanie z hasłem XD
         """
         self.password = password.encode()
         self.key = self._generate_key()
@@ -35,7 +34,7 @@ class SimpleEncryption:
         return base64.urlsafe_b64encode(encrypted_data).decode()
 
     def decrypt_text(self, encrypted_text: str) -> str:
-        """Deszyfruje tekst"""
+        """Rozszyfrowuje tekst"""
         if not encrypted_text:
             return ""
         try:

@@ -1,5 +1,9 @@
 import pygame
 
+
+"""
+ustawienia konfiguracyjne gry
+"""
 pygame.font.init()
 DEBUG = True # napisy z koordynatami enemisow itp.
 WIDTH = 1000

@@ -32,6 +32,9 @@ TESTOWO
 
 shop = ShopKeeper()
 def draw(hero, elapsed_time, scroll, player):
+    """
+    głowna funkcja od rysowania gry
+    """
     WIN.blit(BG, (-scroll, 0))
 
     time_text = s.FONT.render(f"Time: {round(elapsed_time)}s   Score: {hero.score}", True, "black")
@@ -58,6 +61,9 @@ def draw(hero, elapsed_time, scroll, player):
 
 
 def clamp_player_position(player):
+    """
+    ograniczenie ruchu gracza i przeciwników
+    """
     if player.y < s.HEIGHT - 550:
         player.y = s.HEIGHT - 550
     if player.y > s.HEIGHT - player.height:
@@ -69,6 +75,9 @@ def clamp_player_position(player):
 
 
 def main():
+    """
+    głowna funkcja gry
+    """
     initialize_db()
     clock = pygame.time.Clock()
     elapsed_time = 0

@@ -7,6 +7,9 @@ from typing import List
 
 
 class Enemy:
+    """
+    klasa odpowiedzialna za przeciwnika
+    """
     FONT = pygame.font.SysFont('comicsans', 30)
     def __init__(self, name: str, x ,y, image: pygame.Surface, scroll, max_health):
         self.health = max_health
@@ -24,6 +27,9 @@ class Enemy:
         print(f"Created Enemy {self.name}")
 
     def clamp_position(self):
+        """
+        ograniczenie pozycji przeciwnika do pola gry
+        """
         if self.y < s.HEIGHT - 550:
             self.y = s.HEIGHT - 550
         if self.y > s.HEIGHT - self.height:
@@ -38,6 +44,9 @@ class Enemy:
 
 
     def take_damage(self, hero, gametime): # true jesli enemis zyje false jesli wlasnie umarl od ataku
+        """
+        obsługa przyjęcia obrażeń
+        """
         if self.dmg_cd > gametime:
             return True
         else:
@@ -52,6 +61,9 @@ class Enemy:
 
 
     def move(self, player, enemies: List[Enemy], scroll):
+        """
+        obsługa ruchu przeciwnika
+        """
         if scroll != self.last_scroll: # zeby sie kleil do tla
             self.x -= (scroll - self.last_scroll)
             self.last_scroll = scroll
@@ -98,6 +110,9 @@ class Enemy:
 
 
     def draw(self, WIN: pygame.display, gametime):
+        """
+        rysowanie przeciwnika na ekranie
+        """
         WIN.blit(self.image, (self.x, self.y))
         color = (255,0,0)
         if self.dmg_cd > gametime:

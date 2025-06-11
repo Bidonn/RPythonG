@@ -7,6 +7,9 @@ db = SqliteDatabase('game_entries.db')
 
 
 class Entry(Model):
+    """
+    zapis gry do bazy danych, wszystkie pola to stringi zeby mozna bylo zaszyfrowywac
+    """
     player_name = CharField()  # nazwa gracza
     character_class = CharField()  # klasa postaci (Warrior/Wizzard)
     score = CharField()  # wynik (czas gry w sekundach)
@@ -20,8 +23,10 @@ class Entry(Model):
         database = db
 
 
-# Inicjalizacja bazy danych
 def initialize_db():
+    """
+    inicjalizuje polaczenie z bazą danych i sprawdza strukture tabeli
+    """
     db.connect()
     try:
         db.create_tables([Entry], safe=True)
@@ -59,6 +64,9 @@ def initialize_db():
 
 
 def decrypt_entry(entry):
+    """
+    rozszyfrowuje wpis z bazy danych
+    """
     entry.player_name = enc.encryptor.decrypt_text(entry.player_name)
     entry.character_class = enc.encryptor.decrypt_text(entry.character_class)
     entry.score = int(enc.encryptor.decrypt_text(entry.score))
@@ -71,6 +79,9 @@ def decrypt_entry(entry):
 
 # Dodawanie nowego wyniku
 def add_entry(player_name: str, character_class: str, score: int, level: int, max_hp, dmg, ms):
+    """
+    dodaje wpis do bazy danych
+    """
     Entry.create(
         player_name=enc.encryptor.encrypt_text(player_name),
         character_class=enc.encryptor.encrypt_text(character_class),
@@ -83,9 +94,12 @@ def add_entry(player_name: str, character_class: str, score: int, level: int, ma
     )
 
 def get_entry(name: str):
-     e = Entry.select().where(Entry.player_name == enc.encryptor.encrypt_text(name))
-     e = decrypt_entry(e[0])
-     return e
+    """
+    pobiera pojedynczy wpis z bazy danych
+    """
+    e = Entry.select().where(Entry.player_name == enc.encryptor.encrypt_text(name))
+    e = decrypt_entry(e[0])
+    return e
 
 def get_all_entries():
     """

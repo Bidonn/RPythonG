@@ -5,6 +5,9 @@ import pygame
 
 
 class Class(ABC):
+    """
+    klasa bazowa dla bohatera
+    """
     def __init__(self, name: str, hp: int, ms: int, image: str, score, dmg = 10,level=1):
         self.level = level
         self.name = name
@@ -21,6 +24,9 @@ class Class(ABC):
         self.character_class = None
 
     def check_damage(self, enemy, elapsed_time):
+        """
+        otrzymywanie obrażeń
+        """
         if elapsed_time > self.dmg_cd:
 
 
@@ -51,19 +57,31 @@ class Class(ABC):
 
     @abstractmethod
     def start_attack(self, mouse_pos, player_rect):
+        """
+        rozpoczęcia ataku
+        """
         pass
 
     @abstractmethod
     def update_attack(self, player_rect):
+        """
+        przetwarzanie ataku
+        """
         pass
 
 
     @abstractmethod
     def draw_attack(self, surface):
+        """
+        rysowanie ataku
+        """
         pass
 
     @abstractmethod
     def check_attack(self, enemy, gametime): # pls zaimplementuj w wizardzie
+        """
+        interakcja ataku z przeciwnikiem w celu zadania obrażeń
+        """
         pass
 
 

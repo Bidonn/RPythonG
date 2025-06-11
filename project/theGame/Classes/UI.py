@@ -56,6 +56,9 @@ def ui_menu(WIN: pygame.surface):
 
 
 def ui_character_select(WIN: pygame.surface):
+    """
+    menu tworzenia postaci
+    """
     warrior_img = pygame.transform.scale(pygame.image.load('imgs/warrior.png'), (120, 240))
     wizzard_img = pygame.transform.scale(pygame.image.load('imgs/wizzard.png'), (120, 240))
 
@@ -492,6 +495,9 @@ def ui_pause_menu(WIN: pygame.surface, hero, elapsed_time):
 
 
 def ui_game_over(WIN: pygame.surface, hero, elapsed_time): #game over screen
+    """
+    ekran przegranej gry
+    """
     clock = pygame.time.Clock()
 
     quit_button = pygame.Rect(s.WIDTH // 2 - 100, s.HEIGHT // 2 + 220, 200, 50)
@@ -563,7 +569,3 @@ def ui_game_over(WIN: pygame.surface, hero, elapsed_time): #game over screen
         clock.tick(60)
 
     return "quit"
-
-
-def ui_gameplay_overlay(WIN: pygame.surface, hero): #spelle, zycie, staty
-    pass
