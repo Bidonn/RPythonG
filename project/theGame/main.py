@@ -83,8 +83,8 @@ def main():
     """
     głowna funkcja gry
     """
-    global BG, change_stage
-    BG = pygame.transform.scale(pygame.image.load('imgs/tlo2.png'), (2000, 800))
+    global BG, change_stage, hero
+    #BG = pygame.transform.scale(pygame.image.load('imgs/tlo2.png'), (2000, 800))
     level = 1
     initialize_db()
     clock = pygame.time.Clock()
@@ -105,7 +105,10 @@ def main():
     elif menu_choice == "quit":
         return
 
-
+    if hero.level < 10:
+        BG = pygame.transform.scale(pygame.image.load('imgs/tlo2.png'), (2000, 800))
+    else:
+        BG = pygame.transform.scale(pygame.image.load('imgs/tlo3.png'), (2000, 800))
 
     s.Scroll = 0
     player = pygame.Rect(hero.X, hero.Y, 60, 120)
