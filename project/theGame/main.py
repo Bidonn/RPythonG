@@ -27,6 +27,10 @@ enemies = [enemy1]
 """
 TESTOWO
 """
+arrow = pygame.transform.scale(pygame.image.load('imgs/arrow.png'), (600, 400))
+
+change_stage = False
+
 
 shop = ShopKeeper()
 def draw(hero, elapsed_time, scroll, player):
@@ -52,6 +56,10 @@ def draw(hero, elapsed_time, scroll, player):
 
     healthbar = pygame.Rect(s.WIDTH // 2 - 100, s.HEIGHT - 50, max(200 * (hero.hp/hero.max_hp), 5), 20)
     pygame.draw.rect(WIN, (0, 255, 0), healthbar)
+
+    if change_stage:
+        WIN.blit(arrow, (s.WIDTH/2, 200))
+
 
     pygame.display.update()
 
@@ -123,10 +131,13 @@ def main():
                 hero.level += 1
             else:
                 ShopKeeper.just_bought = False
+                if hero.level == 9:
+                    change_stage = True
             hero.hp = hero.max_hp
-            for i in range(hero.level):
-                tmp = Enemy("ziutek", s.WIDTH, (random.random() * ((s.HEIGHT - player.height) - (s.HEIGHT - 550))) + s.HEIGHT - 550, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
-                enemies.append(tmp)
+            if not change_stage:
+                for i in range(hero.level):
+                    tmp = Enemy("ziutek", s.WIDTH, (random.random() * ((s.HEIGHT - player.height) - (s.HEIGHT - 550))) + s.HEIGHT - 550, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
+                    enemies.append(tmp)
 
 
         for event in pygame.event.get():
