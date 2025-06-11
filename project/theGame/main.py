@@ -14,8 +14,6 @@ pygame.init()
 WIN = pygame.display.set_mode((s.WIDTH, s.HEIGHT))
 pygame.display.set_caption('village killer')
 
-# Wczytanie grafik
-BG = pygame.transform.scale(pygame.image.load('imgs/tlo2.png'), (2000, 800))
 
 # Przeciwnicy
 """enemy = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
@@ -78,6 +76,9 @@ def main():
     """
     głowna funkcja gry
     """
+    global BG
+    BG = pygame.transform.scale(pygame.image.load('imgs/tlo2.png'), (2000, 800))
+    level = 1
     initialize_db()
     clock = pygame.time.Clock()
     elapsed_time = 0
@@ -201,6 +202,10 @@ def main():
 
 
         draw(hero, elapsed_time, s.Scroll, player)
+
+        if hero.level == 2 and level == 1:
+            BG = pygame.transform.scale(pygame.image.load('imgs/tlo3.png'), (2000, 800))
+            level+=1
 
     pygame.quit()
 

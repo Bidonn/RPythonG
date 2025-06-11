@@ -8,7 +8,7 @@ class ShopKeeper:
     just_bought = False
     def __init__(self):
         """
-        Inicjalizacja sklepikarza
+        Inicjalizacja sklepikarza/ogniska
         :param x: pozycja x sklepikarza
         :param y: pozycja y sklepikarza
         """
@@ -25,8 +25,9 @@ class ShopKeeper:
 
     def draw(self, win, scroll):
         """
-        Rysuje sklepikarza na ekranie z uwzględnieniem przewijania
+        Rysuje sklepikarza/ogniska na ekranie z uwzględnieniem przewijania
         :param win: okno, na którym rysujemy
+        :param scroll: obecny "offset" na scrollu
         """
         # Pozycja na ekranie uwzględniająca przewijanie
         screen_x = self.x - scroll
@@ -45,6 +46,7 @@ class ShopKeeper:
     def update(self, scroll):
         """
         Aktualizuje pozycję prostokąta kolizji z uwzględnieniem przewijania
+        :param scroll: obecny "offset" na scrollu
         """
         # Aktualizujemy rect do aktualnej pozycji na ekranie
         self.rect.x = self.x - scroll
@@ -61,9 +63,9 @@ class ShopKeeper:
             collision = self.rect.colliderect(player_rect)
             # Aktualizuj stan menu na podstawie kolizji
             if collision and not self.menu.is_visible:
-                self.menu.show()
+                self.menu.is_visible = True
             elif not collision and self.menu.is_visible:
-                self.menu.hide()
+                self.menu.is_visible = False
             return collision
         return False
 
@@ -72,6 +74,7 @@ class ShopKeeper:
         Obsługuje kliknięcie w przyciski menu
         :param mouse_pos: pozycja kliknięcia myszy
         :param scroll: aktualna wartość przewijania
+        :param hero: postać bohatera, wykorzystywana do dodawania poziomu i statystyk
         :return: indeks klikniętego przycisku lub None jeśli nie kliknięto przycisku
         """
         if not self.menu.is_visible:
@@ -151,18 +154,6 @@ class ShopMenu:
             colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]  # Czerwony, zielony, niebieski
             self.buttons.append((button_rect, colors[i]))
 
-    def show(self):
-        """
-        Pokazuje menu
-        """
-        self.is_visible = True
-
-    def hide(self):
-        """
-        Ukrywa menu
-        """
-        self.is_visible = False
-
     def draw(self, win, x, y):
         """
         Rysuje menu na ekranie
@@ -192,7 +183,7 @@ class ShopMenu:
         :param mouse_pos: pozycja kliknięcia myszy
         :param menu_x: pozycja x menu na ekranie
         :param menu_y: pozycja y menu na ekranie
-        :param hero: nie popłacz sie
+        :param hero: postać bohatera, wykorzystywana do dodawania poziomu i statystyk
         :return: indeks klikniętego przycisku lub None jeśli nie kliknięto przycisku
         """
         if not self.is_visible:
