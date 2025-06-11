@@ -42,8 +42,6 @@ def draw(hero, elapsed_time, scroll, player):
     for enemy in enemies:
         enemy.draw(WIN, elapsed_time)
 
-
-
     if hero.level % 3 == 0 and len(enemies) == 0:
         shop.draw(WIN, scroll)
     hero.draw_attack(WIN)
@@ -117,7 +115,7 @@ def main():
                 ShopKeeper.just_bought = False
             hero.hp = hero.max_hp
             for i in range(hero.level):
-                tmp = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
+                tmp = Enemy("ziutek", s.WIDTH, (random.random() * ((s.HEIGHT - player.height) - (s.HEIGHT - 550))) + s.HEIGHT - 550, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
                 enemies.append(tmp)
 
 

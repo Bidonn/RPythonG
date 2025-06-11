@@ -5,7 +5,7 @@ import pygame
 
 
 class Class(ABC):
-    def __init__(self, name: str, hp: int, ms: int, image: str, score,level=1):
+    def __init__(self, name: str, hp: int, ms: int, image: str, score, dmg = 10,level=1):
         self.level = level
         self.name = name
         self.hp = hp
@@ -17,7 +17,7 @@ class Class(ABC):
         self.score = score
         self.dmg_cd = 0
         self.player = pygame.Rect(self.X, self.Y, self.image.get_width(),self.image.get_height())
-        self.DMG = 10
+        self.DMG = dmg
         self.character_class = None
 
     def check_damage(self, enemy, elapsed_time):
@@ -69,7 +69,7 @@ class Class(ABC):
 
 class Warrior(Class):
     sword_timelimit = 1.5
-    def __init__(self, name, score,level=1):
+    def __init__(self, name, score, level=1, ms=10, dmg=10, hp=100):
         self.sword_angle = 0
         self.sword_img = pygame.transform.scale(pygame.image.load("imgs/sword.png"), (100, 33))
         self.sword_active = False
@@ -77,7 +77,7 @@ class Warrior(Class):
         self.sword_base_angle = 0  # Kąt bazowy (do kursora)
         self.sword_attack_duration = 0.3  # sekundy
         self.sword_pos = (0, 0)
-        super().__init__(name, 100, 10, "imgs/warrior.png", level, score)
+        super().__init__(name, hp, ms, "imgs/warrior.png", score, dmg, level)
         self.character_class = "Warrior"
         print("Created Warrior")
 
@@ -163,7 +163,7 @@ class Warrior(Class):
 
 
 class Wizzard(Class):
-    def __init__(self, name: str, score,level=1):
+    def __init__(self, name, score, level=1, ms=4, dmg=10, hp=50):
         self.magic_cd = 1
         self.magic_timer = 0
         self.magic_missiles = []
@@ -177,7 +177,7 @@ class Wizzard(Class):
         # Obrazek pocisku
         self.missile_img = pygame.Surface((40, 16), pygame.SRCALPHA)
         pygame.draw.ellipse(self.missile_img, (0, 150, 255), (0, 0, 40, 16))
-        super().__init__(name, 50, 4, "imgs/wizzard.png", level, score)
+        super().__init__(name, hp, ms, "imgs/wizzard.png", score, dmg, level)
         self.character_class = "Wizzard"
         print("Created Wizzard")
 

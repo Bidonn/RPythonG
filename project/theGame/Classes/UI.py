@@ -139,10 +139,10 @@ def ui_character_select(WIN: pygame.surface):
             # Obsługa przycisków - tylko jeśli nazwa została wprowadzona
             if input_text.strip():  # Sprawdzamy czy nazwa nie jest pusta
                 if warrior_button.handle_event(event):
-                    return Warrior(input_text.strip(), 1, 0)
+                    return Warrior(input_text.strip(), 0, 1)
 
                 if wizzard_button.handle_event(event):
-                    return Wizzard(input_text.strip(), 1, 0)
+                    return Wizzard(input_text.strip(), 0, 1)
             else:
                 # Jeśli nazwa jest pusta, pokaż komunikat błędu na 2 sekundy
                 if warrior_button.handle_event(event) or wizzard_button.handle_event(event):
@@ -332,13 +332,12 @@ def ui_load_game(WIN: pygame.surface):
 
 
                     if not delete_mode and load_button.handle_event(event) and selected_save:
-                        # Utwórz postać na podstawie zapisu
-                        level = getattr(selected_save, 'level', 1)
+
 
                         if selected_save.character_class == "Warrior":
-                            hero = Warrior(selected_save.player_name, level, selected_save.score)
+                            hero = Warrior(selected_save.player_name, selected_save.score, selected_save.level, selected_save.ms, selected_save.dmg, selected_save.max_hp)
                         elif selected_save.character_class == "Wizzard":
-                            hero = Wizzard(selected_save.player_name, level, selected_save.score)
+                            hero = Wizzard(selected_save.player_name, selected_save.score, selected_save.level, selected_save.ms, selected_save.dmg, selected_save.max_hp)
                         else:
                             continue
 
@@ -478,7 +477,7 @@ def ui_pause_menu(WIN: pygame.surface, hero, elapsed_time):
             if save_button.handle_event(event):
                 try:
                     # Zapisz grę do bazy danych
-                    add_entry(hero.name, hero.character_class, hero.score, hero.level)
+                    add_entry(hero.name, hero.character_class, hero.score, hero.level, hero.max_hp, hero.DMG, hero.ms)
                     save_message = "Game saved successfully!"
                     save_message_timer = time.time()
                 except Exception as e:
