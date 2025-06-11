@@ -490,8 +490,76 @@ def ui_pause_menu(WIN: pygame.surface, hero, elapsed_time):
         pygame.display.update()
 
 
-def ui_game_over(WIN: pygame.surface, hero): #game over screen
-    pass
+def ui_game_over(WIN: pygame.surface, hero, elapsed_time): #game over screen
+    clock = pygame.time.Clock()
+
+    quit_button = pygame.Rect(s.WIDTH // 2 - 100, s.HEIGHT // 2 + 220, 200, 50)
+    mouse_pos = (0,0)
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+
+                if quit_button.collidepoint(mouse_pos):
+                    # Wyjście z gry
+                    pygame.quit()
+                    quit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    quit()
+
+        overlay = pygame.Surface((s.WIDTH, s.HEIGHT))
+        overlay.set_alpha(100)
+        overlay.fill((0,0,0))
+        WIN.blit(overlay, (0, 0))
+
+        title_text = s.TITLE_FONT.render("GAME OVER", True, (255,0,0))
+        title_rect = title_text.get_rect(center=(s.WIDTH // 2, s.HEIGHT // 2 - 200))
+        WIN.blit(title_text, title_rect)
+
+        stats_y = s.HEIGHT // 2 - 100
+
+
+        class_text = s.FONT.render(f"Class: {hero.name}", True, (255,255,255))
+        class_rect = class_text.get_rect(center=(s.WIDTH // 2, stats_y + 40))
+        WIN.blit(class_text, class_rect)
+
+        time_text = s.FONT.render(f"Time: {round(elapsed_time)}s", True, (255, 255, 255))
+        time_rect = time_text.get_rect(center=(s.WIDTH // 2, stats_y + 80))
+        WIN.blit(time_text, time_rect)
+
+        level_text = s.FONT.render(f"Level: {hero.level}", True, (255,255,255))
+        level_rect = level_text.get_rect(center=(s.WIDTH // 2, stats_y + 120))
+        WIN.blit(level_text, level_rect)
+
+        score_text = s.FONT.render(f"Final Score: {hero.score}", True, (255,255,255))
+        score_rect = score_text.get_rect(center=(s.WIDTH // 2, stats_y + 160))
+        WIN.blit(score_text, score_rect)
+
+        # Przycisk Quit
+        quit_color = (128,0,0) if quit_button.collidepoint(mouse_pos) else (128,128,128)
+        pygame.draw.rect(WIN, quit_color, quit_button)
+        pygame.draw.rect(WIN, (255,255,255), quit_button, 3)
+
+        quit_text = s.FONT.render("Quit (ESC)", True, (255,255,255))
+        quit_text_rect = quit_text.get_rect(center=quit_button.center)
+        WIN.blit(quit_text, quit_text_rect)
+
+
+
+        pygame.display.update()
+        clock.tick(60)
+
+    return "quit"
+
 
 def ui_gameplay_overlay(WIN: pygame.surface, hero): #spelle, zycie, staty
     pass

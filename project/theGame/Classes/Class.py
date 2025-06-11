@@ -10,15 +10,28 @@ class Class(ABC):
         self.player = player
         self.name = name
         self.hp = hp
+        self.max_hp = hp
         self.ms = ms
         self.image = pygame.transform.scale(pygame.image.load(image), (60, 120))
         self.X = 20
         self.Y = s.HEIGHT / 2
         self.score = score
+        self.dmg_cd = 0
+        self.player = pygame.Rect(self.X, self.Y, self.image.get_width(),self.image.get_height())
         self.DMG = 10
 
+    def check_damage(self, enemy, elapsed_time):
+        if elapsed_time > self.dmg_cd:
 
 
+            if self.player.colliderect(enemy.rect):
+                self.dmg_cd = elapsed_time + 0.5
+                self.hp -= 10
+
+        if self.hp <= 0:
+            return False
+        else:
+            return True
 
     @abstractmethod
     def spell1(self):
@@ -223,6 +236,7 @@ class Wizzard(Class):
         # Rysowanie wszystkich aktywnych pocisków
         for missile in self.magic_missiles:
             missile.draw(surface)
+        print(f"Liczba pocisków: {len(self.magic_missiles)}")
 
     def check_attack(self, enemy, gametime):
         """

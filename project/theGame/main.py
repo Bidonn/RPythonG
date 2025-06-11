@@ -5,6 +5,7 @@ import time
 import settings as s
 from project.theGame.Classes.Enemy import Enemy
 import project.theGame.Classes.UI as UI
+from project.theGame.Classes.UI import ui_game_over
 from project.theGame.Classes.ShopStuff import ShopKeeper
 from project.theGame.database import initialize_db
 
@@ -46,6 +47,13 @@ def draw(hero, elapsed_time, scroll, player):
     if hero.level == 3 and len(enemies) == 0:
         shop.draw(WIN, scroll)
     hero.draw_attack(WIN)
+
+    if s.DEBUG:
+        pygame.draw.rect(WIN, (255, 0, 0), player, 2)
+
+    healthbar = pygame.Rect(s.WIDTH // 2 - 100, s.HEIGHT - 50, max(200 * (hero.hp/hero.max_hp), 5), 20)
+    pygame.draw.rect(WIN, (0, 255, 0), healthbar)
+
     pygame.display.update()
 
 
@@ -60,7 +68,6 @@ def clamp_player_position(player):
         player.x = 0
     if player.x > s.WIDTH - player.width:
         player.x = s.WIDTH - player.width
-
 
 
 def main():
@@ -104,10 +111,10 @@ def main():
 
         if len(enemies) == 0 and hero.level != 3:
                 hero.level += 1
+                hero.hp = hero.max_hp
                 for i in range(hero.level):
                     tmp = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
                     enemies.append(tmp)
-
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -164,13 +171,18 @@ def main():
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             player.y += hero.ms
 
+        clamp_player_position(player)
+        hero.player = player
+
         for enemy in enemies:
             enemy.move(player,enemies, s.Scroll)
             if not hero.check_attack(enemy, elapsed_time):
                 enemies.remove(enemy)
                 continue
+            if not hero.check_damage(enemy, elapsed_time):
+                ui_game_over(WIN, hero, elapsed_time)
 
-        clamp_player_position(player)
+
         draw(hero, elapsed_time, s.Scroll, player)
 
     pygame.quit()
