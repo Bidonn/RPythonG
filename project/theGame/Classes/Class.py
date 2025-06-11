@@ -5,9 +5,8 @@ import pygame
 
 
 class Class(ABC):
-    def __init__(self, name: str, player: str, hp: int, ms: int, image: str, score,level=1):
+    def __init__(self, name: str, hp: int, ms: int, image: str, score,level=1):
         self.level = level
-        self.player = player
         self.name = name
         self.hp = hp
         self.max_hp = hp
@@ -19,6 +18,7 @@ class Class(ABC):
         self.dmg_cd = 0
         self.player = pygame.Rect(self.X, self.Y, self.image.get_width(),self.image.get_height())
         self.DMG = 10
+        self.character_class = None
 
     def check_damage(self, enemy, elapsed_time):
         if elapsed_time > self.dmg_cd:
@@ -69,7 +69,7 @@ class Class(ABC):
 
 class Warrior(Class):
     sword_timelimit = 1.5
-    def __init__(self, player: str,score,level=1):
+    def __init__(self, name, score,level=1):
         self.sword_angle = 0
         self.sword_img = pygame.transform.scale(pygame.image.load("imgs/sword.png"), (100, 33))
         self.sword_active = False
@@ -77,7 +77,8 @@ class Warrior(Class):
         self.sword_base_angle = 0  # Kąt bazowy (do kursora)
         self.sword_attack_duration = 0.3  # sekundy
         self.sword_pos = (0, 0)
-        super().__init__("Warrior", player, 100, 10, "imgs/warrior.png", level, score)
+        super().__init__(name, 100, 10, "imgs/warrior.png", level, score)
+        self.character_class = "Warrior"
         print("Created Warrior")
 
     def spell1(self):
@@ -126,7 +127,6 @@ class Warrior(Class):
         self.sword_pos = (player_rect.centerx + offset_x, player_rect.centery + offset_y)
 
 
-
     def draw_attack(self, surface):
         """Rysuje miecz jeśli aktywny."""
         if not self.sword_active:
@@ -163,7 +163,7 @@ class Warrior(Class):
 
 
 class Wizzard(Class):
-    def __init__(self, player: str, score,level=1):
+    def __init__(self, name: str, score,level=1):
         self.magic_cd = 1
         self.magic_timer = 0
         self.magic_missiles = []
@@ -177,7 +177,8 @@ class Wizzard(Class):
         # Obrazek pocisku
         self.missile_img = pygame.Surface((40, 16), pygame.SRCALPHA)
         pygame.draw.ellipse(self.missile_img, (0, 150, 255), (0, 0, 40, 16))
-        super().__init__("Wizzard", player, 50, 4, "imgs/wizzard.png", level, score)
+        super().__init__(name, 50, 4, "imgs/wizzard.png", level, score)
+        self.character_class = "Wizzard"
         print("Created Wizzard")
 
     def spell1(self):

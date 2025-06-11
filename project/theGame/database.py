@@ -1,5 +1,6 @@
 from peewee import *
 from datetime import datetime
+import encryption as enc
 
 # Tworzymy połączenie z bazą danych
 db = SqliteDatabase('game_entries.db')
@@ -8,9 +9,9 @@ db = SqliteDatabase('game_entries.db')
 class Entry(Model):
     player_name = CharField()  # nazwa gracza
     character_class = CharField()  # klasa postaci (Warrior/Wizzard)
-    score = IntegerField()  # wynik (czas gry w sekundach)
-    date = DateTimeField(default=datetime.now)  # data uzyskania wyniku
-    level = IntegerField(default=1)
+    score = CharField()  # wynik (czas gry w sekundach)
+    date = CharField()  # data uzyskania wyniku
+    level = CharField()
 
     class Meta:
         database = db
@@ -29,9 +30,9 @@ def initialize_db():
         required_columns = {
             'player_name': ('TEXT', None),
             'character_class': ('TEXT', None),
-            'score': ('INTEGER', '0'),
-            'date': ('DATETIME', 'CURRENT_TIMESTAMP'),
-            'level': ('INTEGER', '1')
+            'score': ('TEXT', None),
+            'date': ('TEXT', None),
+            'level': ('TEXT', None)
         }
 
         # Sprawdzamy i dodajemy brakujące kolumny
@@ -54,22 +55,37 @@ def initialize_db():
 # Dodawanie nowego wyniku
 def add_entry(player_name: str, character_class: str, score: int, level: int):
     Entry.create(
-        player_name=player_name,
-        character_class=character_class,
-        score=score,
-        level=level
+        player_name=enc.encryptor.encrypt_text(player_name),
+        character_class=enc.encryptor.encrypt_text(character_class),
+        score=enc.encryptor.encrypt_text(str(score)),
+        level=enc.encryptor.encrypt_text(str(level)),
+        date=enc.encryptor.encrypt_text(datetime.now().strftime("%Y-%m-%d %H:%M"))
     )
 
 def get_entry(name: str):
-    return Entry.select().where(Entry.player_name == name).get()
+     e = Entry.select().where(Entry.player_name == enc.encryptor.encrypt_text(name))
+     e.player_name = enc.encryptor.decrypt_text(e.player_name)
+     e.character_class = enc.encryptor.decrypt_text(e.character_class)
+     e.score = int(enc.encryptor.decrypt_text(e.score))
+     e.level = int(enc.encryptor.decrypt_text(e.level))
+     e.date = datetime.strptime(enc.encryptor.decrypt_text(e.date), "%Y-%m-%d %H:%M")
+     return e
 
 def get_all_entries():
     """
     Pobiera wszystkie wpisy z bazy danych, posortowane według daty malejąco.
     """
     try:
-        return list(Entry.select().order_by(Entry.date.desc()))
-    except:
+        entry_list = list(Entry.select())
+        for entry in entry_list:
+            entry.player_name = enc.encryptor.decrypt_text(entry.player_name)
+            entry.character_class = enc.encryptor.decrypt_text(entry.character_class)
+            entry.score = int(enc.encryptor.decrypt_text(entry.score))
+            entry.level = int(enc.encryptor.decrypt_text(entry.level))
+            entry.date = datetime.strptime(enc.encryptor.decrypt_text(entry.date), "%Y-%m-%d %H:%M")
+        return entry_list
+    except Exception as e:
+        print(e)
         return []
 
 
@@ -77,13 +93,14 @@ def delete_entry(entry_id: int):
     """
     Usuwa wpis o podanym ID z bazy danych
     """
+    entry = None
     try:
         entry = Entry.get_by_id(entry_id)
-        player_name = entry.player_name
+        player_name = enc.encryptor.decrypt_text(entry.player_name)
         entry.delete_instance()
         print(f"Usunięto zapis gracza: {player_name}")
         return True
-    except Entry.DoesNotExist:
+    except entry.DoesNotExist:
         print(f"Nie znaleziono wpisu o ID: {entry_id}")
         return False
     except Exception as e:

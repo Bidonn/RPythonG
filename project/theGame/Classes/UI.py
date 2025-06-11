@@ -4,6 +4,8 @@ import project.theGame.settings as s
 from project.theGame.Classes.Class import Class, Warrior, Wizzard
 import time
 
+from project.theGame.database import get_all_entries
+
 start_button = Button(s.WIDTH // 2 - 100, s.HEIGHT // 3 * 2, 200, 50, "Start Game", (255,255,255), (50,255,50))
 
 
@@ -162,7 +164,7 @@ def ui_load_game(WIN: pygame.surface):
     # Pobierz wszystkie zapisy z bazy danych
     def refresh_saves():
         try:
-            return list(Entry.select().order_by(Entry.date.desc()))
+            return get_all_entries()
         except:
             return []
 
@@ -433,8 +435,8 @@ def ui_pause_menu(WIN: pygame.surface, hero, elapsed_time):
 
         # Statystyki gracza
         player_info = [
-            f"Player: {hero.player}",
-            f"Character: {hero.name}",
+            f"Name: {hero.name}",
+            f"Character: {hero.character_class}",
             f"Score: {hero.score}",
             f"Level: {hero.level}",
             f"Time: {round(elapsed_time)}s"
@@ -476,7 +478,7 @@ def ui_pause_menu(WIN: pygame.surface, hero, elapsed_time):
             if save_button.handle_event(event):
                 try:
                     # Zapisz grę do bazy danych
-                    add_entry(hero.player, hero.name, hero.score, hero.level)
+                    add_entry(hero.name, hero.character_class, hero.score, hero.level)
                     save_message = "Game saved successfully!"
                     save_message_timer = time.time()
                 except Exception as e:
@@ -527,21 +529,24 @@ def ui_game_over(WIN: pygame.surface, hero, elapsed_time): #game over screen
 
         stats_y = s.HEIGHT // 2 - 100
 
+        name_text = s.FONT.render(f"Name: {hero.name}", True, (255, 255, 255))
+        name_rect = name_text.get_rect(center=(s.WIDTH // 2, stats_y + 40))
+        WIN.blit(name_text, name_rect)
 
-        class_text = s.FONT.render(f"Class: {hero.name}", True, (255,255,255))
-        class_rect = class_text.get_rect(center=(s.WIDTH // 2, stats_y + 40))
+        class_text = s.FONT.render(f"Class: {hero.character_class}", True, (255,255,255))
+        class_rect = class_text.get_rect(center=(s.WIDTH // 2, stats_y + 80))
         WIN.blit(class_text, class_rect)
 
         time_text = s.FONT.render(f"Time: {round(elapsed_time)}s", True, (255, 255, 255))
-        time_rect = time_text.get_rect(center=(s.WIDTH // 2, stats_y + 80))
+        time_rect = time_text.get_rect(center=(s.WIDTH // 2, stats_y + 120))
         WIN.blit(time_text, time_rect)
 
         level_text = s.FONT.render(f"Level: {hero.level}", True, (255,255,255))
-        level_rect = level_text.get_rect(center=(s.WIDTH // 2, stats_y + 120))
+        level_rect = level_text.get_rect(center=(s.WIDTH // 2, stats_y + 160))
         WIN.blit(level_text, level_rect)
 
         score_text = s.FONT.render(f"Final Score: {hero.score}", True, (255,255,255))
-        score_rect = score_text.get_rect(center=(s.WIDTH // 2, stats_y + 160))
+        score_rect = score_text.get_rect(center=(s.WIDTH // 2, stats_y + 200))
         WIN.blit(score_text, score_rect)
 
         # Przycisk Quit
