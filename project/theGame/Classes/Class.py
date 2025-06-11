@@ -223,7 +223,6 @@ class Wizzard(Class):
         # Rysowanie wszystkich aktywnych pocisków
         for missile in self.magic_missiles:
             missile.draw(surface)
-        print(f"Liczba pocisków: {len(self.magic_missiles)}")
 
     def check_attack(self, enemy, gametime):
         """

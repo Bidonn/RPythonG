@@ -41,12 +41,11 @@ def draw(hero, elapsed_time, scroll, player):
     for enemy in enemies:
         enemy.draw(WIN, elapsed_time)
 
-    hero.draw_attack(WIN)
+
 
     if hero.level == 3 and len(enemies) == 0:
-        print(f"Warunki spełnione: level={hero.level}, enemies={len(enemies)}")
         shop.draw(WIN, scroll)
-
+    hero.draw_attack(WIN)
     pygame.display.update()
 
 
@@ -61,6 +60,7 @@ def clamp_player_position(player):
         player.x = 0
     if player.x > s.WIDTH - player.width:
         player.x = s.WIDTH - player.width
+
 
 
 def main():
@@ -97,17 +97,17 @@ def main():
 
         hero.update_attack(player)
 
-        #Testowałem respienie się wrogów, można by na przykład tutaj wstawić coś no nie?
-        if hero.level == 3 and len(enemies) == 0:
-            shop.update()
-        else:
-            if len(enemies) == 0:
-                    hero.level += 1
-                    for i in range(hero.level):
-                        tmp = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
-                        enemies.append(tmp)
+        if shop.check_collision(player):
+            print("Kolizja ze sklepem!")
+            # Tutaj możesz dodać dowolną logikę, która ma się wykonać podczas kolizji
+            # Na przykład: otwieranie menu sklepu, wyświetlanie komunikatu, itp.
 
-        shop.update()
+        if len(enemies) == 0 and hero.level != 3:
+                hero.level += 1
+                for i in range(hero.level):
+                    tmp = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
+                    enemies.append(tmp)
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
