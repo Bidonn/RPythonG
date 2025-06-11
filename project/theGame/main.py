@@ -44,7 +44,7 @@ def draw(hero, elapsed_time, scroll, player):
 
 
 
-    if hero.level == 3 and len(enemies) == 0:
+    if hero.level % 3 == 0 and len(enemies) == 0:
         shop.draw(WIN, scroll)
     hero.draw_attack(WIN)
 
@@ -104,24 +104,34 @@ def main():
 
         hero.update_attack(player)
 
-        if shop.check_collision(player):
-            print("Kolizja ze sklepem!")
-            # Tutaj możesz dodać dowolną logikę, która ma się wykonać podczas kolizji
-            # Na przykład: otwieranie menu sklepu, wyświetlanie komunikatu, itp.
+        shop.check_collision(player)
 
-        if len(enemies) == 0 and hero.level != 3:
+
+
+        #to na taśme hehe
+        if len(enemies) == 0 and hero.level % 3 != 0:
+            print(hero.max_hp, hero.DMG, hero.ms)
+            if not ShopKeeper.just_bought:
                 hero.level += 1
-                hero.hp = hero.max_hp
-                for i in range(hero.level):
-                    tmp = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
-                    enemies.append(tmp)
+            else:
+                ShopKeeper.just_bought = False
+            hero.hp = hero.max_hp
+            for i in range(hero.level):
+                tmp = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
+                enemies.append(tmp)
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                #atakiren machen
                 hero.start_attack(pygame.mouse.get_pos(), player)
+
+                #obsługa sklepu
+                if shop.menu.is_visible:
+                    shop.handle_click(pygame.mouse.get_pos(), s.Scroll, hero)
 
             if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_p):
                 pause_start = time.time()
