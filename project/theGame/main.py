@@ -5,6 +5,7 @@ import time
 import settings as s
 from project.theGame.Classes.Enemy import Enemy
 import project.theGame.Classes.UI as UI
+from project.theGame.Classes.ShopStuff import ShopKeeper
 from project.theGame.database import initialize_db
 
 pygame.init()
@@ -27,6 +28,8 @@ enemies = [enemy1]
 """
 TESTOWO
 """
+
+shop = ShopKeeper()
 def draw(hero, elapsed_time, scroll, player):
     WIN.blit(BG, (-scroll, 0))
 
@@ -40,12 +43,9 @@ def draw(hero, elapsed_time, scroll, player):
 
     hero.draw_attack(WIN)
 
-
-    if hero.level == 3:
-        # Tworzenie niebieskiego kwadratu o wymiarach 50x50 pikseli
-        blue_square = pygame.Rect(s.WIDTH // 2 - 25, s.HEIGHT // 2 - 25, 50, 50)
-        pygame.draw.rect(WIN, (0, 0, 255), blue_square)  # Kolor (0, 0, 255) to niebieski w RGB
-
+    if hero.level == 3 and len(enemies) == 0:
+        print(f"Warunki spełnione: level={hero.level}, enemies={len(enemies)}")
+        shop.draw(WIN, scroll)
 
     pygame.display.update()
 
@@ -98,12 +98,16 @@ def main():
         hero.update_attack(player)
 
         #Testowałem respienie się wrogów, można by na przykład tutaj wstawić coś no nie?
-        if(hero.level != 3):
+        if hero.level == 3 and len(enemies) == 0:
+            shop.update()
+        else:
             if len(enemies) == 0:
-                hero.level += 1
-                for i in range(hero.level):
-                    tmp = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
-                    enemies.append(tmp)
+                    hero.level += 1
+                    for i in range(hero.level):
+                        tmp = Enemy("ziutek", s.WIDTH, s.HEIGHT, pygame.transform.scale(pygame.image.load('imgs/villager.png'), (60,120)), s.Scroll, 100)
+                        enemies.append(tmp)
+
+        shop.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

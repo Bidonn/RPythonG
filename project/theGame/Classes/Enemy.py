@@ -43,7 +43,7 @@ class Enemy:
         else:
             self.dmg_cd = gametime + 0.5
 
-        self.health -= hero.level * 10
+        self.health -= hero.level * 1000
         if self.health < 0:
             hero.score += self.max_health * hero.level
             return False

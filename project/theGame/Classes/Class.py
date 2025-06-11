@@ -15,6 +15,7 @@ class Class(ABC):
         self.X = 20
         self.Y = s.HEIGHT / 2
         self.score = score
+        self.DMG = 10
 
 
 
