@@ -162,7 +162,7 @@ class Wizzard(Class):
         self.magic_missiles = []
         self.magic_cd = 5  # cooldown w milisekundach
         self.magic_timer = 0
-        self.magic_damage = self.DMG
+        self.magic_damage = dmg
         self.missile_speed = 5
         self.missile_radius = 5  # promień kółka pocisku
         self.missile_color = (0, 0, 255)  # niebieski kolor
